@@ -5,6 +5,6 @@ import com.no.patient.sky.patientsky.response.AppointmentResponse;
 
 public interface AppointmentService {
 
-    public AppointmentResponse getAvailableTimes(AppointmentRequest request);
+    AppointmentResponse getAvailableTimes(AppointmentRequest request);
 
 }

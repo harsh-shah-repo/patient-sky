@@ -28,7 +28,7 @@ public class JsonData {
     public void loadJsonFiles(){
         for(Resource resource : resources){
             try {
-                Appointments appointments =  new ObjectMapper().readValue(resource.getInputStream(), Appointments.class);
+                Appointments appointments = new ObjectMapper().readValue(resource.getInputStream(), Appointments.class);
                 calendarAppointments.put(removeFileNameExtension(resource.getFilename()), appointments);
             } catch (IOException e) {
                 log.error("Error in Reading JSON file {}",resource.getFilename());
@@ -38,6 +38,10 @@ public class JsonData {
 
     public Appointments getAppointmentByCalendarId(UUID calendarId){
         return calendarAppointments.get(calendarId.toString());
+    }
+
+    public boolean checkIfCalendarIdDoesNotExists(UUID calendarId){
+        return !calendarAppointments.containsKey(calendarId.toString());
     }
 
     private String removeFileNameExtension(String fileName){

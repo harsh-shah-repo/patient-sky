@@ -23,11 +23,7 @@ public class AppointmentController {
             consumes = "application/json",
             produces = "application/json")
     public AppointmentResponse findAvailableTime(@RequestBody @Validated AppointmentRequest request){
-
-        if(request.getCalendarIds() != null && !request.getCalendarIds().isEmpty()){
-            return appointmentService.getAvailableTimes(request);
-        }
-
-        return new AppointmentResponse();
+        return appointmentService.getAvailableTimes(request);
     }
+
 }

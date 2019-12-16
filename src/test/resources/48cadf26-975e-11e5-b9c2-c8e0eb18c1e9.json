@@ -1,0 +1,52 @@
+{
+  "appointments": [
+    {
+      "id": "1847c677-1be8-4e44-a84b-edd6751e8302",
+      "patient_id": "1bee2bf0-9751-11e5-bc1b-c8e0eb18c1e9",
+      "calendar_id": "48cadf26-975e-11e5-b9c2-c8e0eb18c1e9",
+      "start": "2019-04-23T12:15:00",
+      "end": "2019-04-23T12:30:00",
+      "patient_comment": null,
+      "note": null,
+      "time_slot_type_id": "452935de-975e-11e5-ae1a-c8e0eb18c1e9",
+      "type_id": null,
+      "state": 0,
+      "out_of_office_location": "",
+      "out_of_office": false,
+      "completed": true,
+      "is_scheduled": false
+    },
+    {
+      "id": "bdad6fcd-d9d2-4418-aceb-ee3180f04450",
+      "patient_id": "1bee2bf0-9751-11e5-bc1b-c8e0eb18c1e9",
+      "calendar_id": "48cadf26-975e-11e5-b9c2-c8e0eb18c1e9",
+      "start": "2019-04-23T13:15:00",
+      "end": "2019-04-23T13:30:00",
+      "patient_comment": null,
+      "note": null,
+      "time_slot_type_id": "452935de-975e-11e5-ae1a-c8e0eb18c1e9",
+      "type_id": null,
+      "state": 0,
+      "out_of_office_location": "",
+      "out_of_office": false,
+      "completed": true,
+      "is_scheduled": false
+    },
+    {
+      "id": "76f0b72c-6127-4efa-a783-56cdc71caa45",
+      "patient_id": "1bc93318-9751-11e5-9d96-c8e0eb18c1e9",
+      "calendar_id": "48cadf26-975e-11e5-b9c2-c8e0eb18c1e9",
+      "start": "2019-04-23T19:00:00",
+      "end": "2019-04-23T19:15:00",
+      "patient_comment": null,
+      "note": null,
+      "time_slot_type_id": "452935de-975e-11e5-ae1a-c8e0eb18c1e9",
+      "type_id": null,
+      "state": 4,
+      "out_of_office_location": "",
+      "out_of_office": false,
+      "completed": true,
+      "is_scheduled": false
+    }
+  ]
+}

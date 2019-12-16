@@ -1,16 +1,14 @@
 package com.no.patient.sky.patientsky.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
 public class AppointmentResponse {
 
     private List<CalendarAvailableTimes> availableTimes;
 
-    public List<CalendarAvailableTimes> getAvailableTimes() {
-        return availableTimes;
-    }
-
-    public void setAvailableTimes(List<CalendarAvailableTimes> availableTimes) {
-        this.availableTimes = availableTimes;
-    }
 }
