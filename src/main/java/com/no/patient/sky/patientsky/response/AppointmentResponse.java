@@ -9,6 +9,6 @@ import java.util.List;
 @Setter
 public class AppointmentResponse {
 
-    private List<CalendarAvailableTimes> availableTimes;
+    private List<CalendarAvailableSlot> availableSlots;
 
 }

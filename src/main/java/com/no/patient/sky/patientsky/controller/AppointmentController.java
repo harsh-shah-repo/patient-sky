@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AppointmentController {
 
     @Autowired
-    AppointmentService appointmentService;
+    private AppointmentService appointmentService;
 
 
     @RequestMapping(
-            value = "/getAvailableTimes",
+            value = "/getAvailableSlot",
             method = RequestMethod.GET,
             consumes = "application/json",
             produces = "application/json")
-    public AppointmentResponse findAvailableTime(@RequestBody @Validated AppointmentRequest request){
+    public AppointmentResponse findAvailableSlot(@RequestBody @Validated AppointmentRequest request){
         return appointmentService.getAvailableTimes(request);
     }
 

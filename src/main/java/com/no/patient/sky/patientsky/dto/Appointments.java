@@ -1,28 +1,22 @@
 package com.no.patient.sky.patientsky.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Appointments {
 
-    private List<Appointment> appointments;
-    private List<TimeSlot> timeslots;
+    @JsonProperty("appointments")
+    private List<Appointment> appointmentList;
 
-    public List<Appointment> getAppointments() {
-        return appointments;
-    }
+    @JsonProperty("timeslots")
+    private List<TimeSlot> timeSlotList;
 
-    public void setAppointments(List<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-
-    public List<TimeSlot> getTimeslots() {
-        return timeslots;
-    }
-
-    public void setTimeslots(List<TimeSlot> timeslots) {
-        this.timeslots = timeslots;
-    }
 }
+

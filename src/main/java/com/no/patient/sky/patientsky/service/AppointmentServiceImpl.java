@@ -5,8 +5,8 @@ import com.no.patient.sky.patientsky.exception.AppointmentException;
 import com.no.patient.sky.patientsky.initializer.JsonData;
 import com.no.patient.sky.patientsky.request.AppointmentRequest;
 import com.no.patient.sky.patientsky.response.AppointmentResponse;
-import com.no.patient.sky.patientsky.response.AvailableTime;
-import com.no.patient.sky.patientsky.response.CalendarAvailableTimes;
+import com.no.patient.sky.patientsky.response.AvailableSlot;
+import com.no.patient.sky.patientsky.response.CalendarAvailableSlot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,108 +26,94 @@ import java.util.stream.Collectors;
 public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
-    JsonData data;
+    private JsonData fileData;
 
     @Override
     public AppointmentResponse getAvailableTimes(AppointmentRequest request) {
 
-        validateTimePeriod(request.getPeriodToSearch());
-
+        validateTimePeriod(request);
 
         AppointmentResponse response = new AppointmentResponse();
-        List<CalendarAvailableTimes> calendarAvailableTimes = new ArrayList<>();
+        List<CalendarAvailableSlot> availableTimeSlot = new ArrayList<>();
 
-        for (UUID calendarId : request.getCalendarIds()){
-            if(data.checkIfCalendarIdDoesNotExists(calendarId)){
-                /**
-                 * Calendar Id does not exists
-                 * Form Error statement
-                 */
-                log.info("Calendar Id {} does not exist in data", calendarId);
-                CalendarAvailableTimes availableTimes = new CalendarAvailableTimes(calendarId, "Calendar Id does not exist.");
-                calendarAvailableTimes.add(availableTimes);
+        for (UUID calendarId : request.getCalendarIds()) {
+            if (fileData.checkIfCalendarIdDoesNotExists(calendarId)) {
+                //Calendar Id does not exists hence form response with Error statement.
+                availableTimeSlot.add(CalendarAvailableSlot.builder().calendarId(calendarId).error("Calendar Id does not exist.").build());
             } else {
 
-                String[] timeDuration = request.getPeriodToSearch().split("/");
-                Instant startTime = Instant.parse(timeDuration[0]);
-                Instant endTime = Instant.parse(timeDuration[1]);
+                List<Appointment> schedules = getSchedulesForCalendarIdByTimePeriod(calendarId, request.getStartTime(), request.getEndTime());
 
-                List<Appointment> schedules = getSchedulesForCalendarIdByTimePeriod(calendarId, startTime, endTime);
+                if (schedules.isEmpty()) {
+                    //There are no appointments for this calendarId. Split available time in duration slots.
+                    List<AvailableSlot> availableSlotList = getAllTimeSlotsBetweenTime(request.getStartTime(), request.getEndTime(), request.getDuration());
 
-                if(schedules.isEmpty()){
-                    /**
-                     * There are no appointments for this calendarId.
-                     * Split available time in duration slots.
-                     */
-                    log.info("There are no appointments in provided time Frame for Calendar Id = {} all slots available", calendarId);
-                    List<AvailableTime> availableSlots = getAllTimeSlotsBetweenTime(startTime, endTime, request.getDuration());
-                    CalendarAvailableTimes availableTimes = new CalendarAvailableTimes(calendarId, availableSlots);
-
-                    calendarAvailableTimes.add(availableTimes);
+                    availableTimeSlot.add(CalendarAvailableSlot.builder()
+                            .calendarId(calendarId)
+                            .availableSlotList(availableSlotList)
+                            .build());
                 } else {
 
-                    log.info("The time slots will be calculated based on unavailable appointments for Calendar Id = {}", calendarId);
+                    //Sort list by startTime time.
+                    schedules.sort(Comparator.comparing(Appointment::getStartTime));
 
-                    //Sort list by start time.
-                    schedules.sort(Comparator.comparing(Appointment::getStart));
-
-                    List<AvailableTime> availableSlots = new ArrayList<>();
+                    List<AvailableSlot> availableSlotList = new ArrayList<>();
 
                     /**
                      * Iterate the list of schedules and get slots in between the available time.
-                     * Increment start time slot on each iteration.
+                     * Increment startTime time slot on each iteration.
                      */
-                    Instant startTimeSlot = startTime;
-                    for (Appointment appointment : schedules){
-                        if(startTimeSlot.isBefore(appointment.getStart().toInstant())){
-                            availableSlots.addAll(getAllTimeSlotsBetweenTime(startTimeSlot, appointment.getStart().toInstant(), request.getDuration()));
+                    Instant startTimeSlot = request.getStartTime();
+                    for (Appointment appointment : schedules) {
+                        if (startTimeSlot.isBefore(appointment.getStartTime().toInstant())) {
+                            availableSlotList.addAll(getAllTimeSlotsBetweenTime(startTimeSlot, appointment.getStartTime().toInstant(), request.getDuration()));
                         }
-                        startTimeSlot = appointment.getEnd().toInstant();
+                        startTimeSlot = appointment.getEndTime().toInstant();
                     }
 
-                    //After iteration if there is slot available between end time Add to list.
-                    if(startTimeSlot.isBefore(endTime)){
-                        availableSlots.addAll(getAllTimeSlotsBetweenTime(startTimeSlot, endTime, request.getDuration()));
+                    //After iteration if there is slot available between endTime time Add to list.
+                    if (startTimeSlot.isBefore(request.getEndTime())) {
+                        availableSlotList.addAll(getAllTimeSlotsBetweenTime(startTimeSlot, request.getEndTime(), request.getDuration()));
                     }
 
-                    CalendarAvailableTimes availableTimes = new CalendarAvailableTimes(calendarId, availableSlots);
-                    calendarAvailableTimes.add(availableTimes);
+                    availableTimeSlot.add(CalendarAvailableSlot.builder()
+                            .calendarId(calendarId)
+                            .availableSlotList(availableSlotList)
+                            .build());
                 }
             }
         }
-
-        response.setAvailableTimes(calendarAvailableTimes);
+        response.setAvailableSlots(availableTimeSlot);
         return response;
     }
 
     /**
-     * @param periodToSearch
-     * Period valid format = <Start date>/<End date>
-     * Date is in ISO8601 format
      *
+     * This method validates Time period and sets StartTime and End time in object.
+     * Period valid format = <Start date>/<End date>
      * example : 2019-04-23T10:00:00Z/2019-04-24T00:30:00Z
      *
+     * @param request
      * @throws AppointmentException if format is invalid
-     *
      */
-    private void validateTimePeriod(String periodToSearch) {
+    private void validateTimePeriod(AppointmentRequest request) {
 
-        if(!periodToSearch.contains("/")){
-            log.error("Request periodToSearch={} string is missing slash ", periodToSearch);
+        if (!request.getPeriodToSearch().contains("/")) {
+            log.error("Request periodToSearch={} string is missing slash ", request.getPeriodToSearch());
             throw new AppointmentException("Invalid Period to Search");
         }
 
-        try{
-            String[] timeDuration = periodToSearch.split("/");
-            Instant startTime = Instant.parse(timeDuration[0]);
-            Instant endTime = Instant.parse(timeDuration[1]);
+        try {
+            String[] timeDuration = request.getPeriodToSearch().split("/");
+            request.setStartTime(Instant.parse(timeDuration[0]));
+            request.setEndTime(Instant.parse(timeDuration[1]));
 
-            if(!endTime.isAfter(startTime)){
-                log.error("EndTime={} is less than or equal to StartTime={}", endTime, startTime);
+            if (!request.getEndTime().isAfter(request.getStartTime())) {
+                log.error("EndTime={} is less than or equal to StartTime={}", request.getEndTime(), request.getStartTime());
                 throw new AppointmentException("Invalid Period to Search");
             }
-        } catch (DateTimeParseException exception){
-            log.error("DateTimeParseException in converting the period to Date for period={}", periodToSearch);
+        } catch (DateTimeParseException exception) {
+            log.error("DateTimeParseException in in parsing {}", request.getPeriodToSearch());
             throw new AppointmentException("Invalid Period to Search");
         }
     }
@@ -138,27 +124,28 @@ public class AppointmentServiceImpl implements AppointmentService {
      * 1. Appointment Calendar Id mathes Calendar If from Request
      * 2. Filter All appointments that are with Start time and after Start time.
      * 3. Filter All appointments that are with End time and before End time.
+     *
      * @param calendarId
      * @param startTime
      * @param endTime
      * @return List of Appointments
      */
     private List<Appointment> getSchedulesForCalendarIdByTimePeriod(UUID calendarId, Instant startTime, Instant endTime) {
-        return data.getAppointmentByCalendarId(calendarId).getAppointments().stream()
-                .filter(s -> s.getCalendar_id().equals(calendarId.toString()))
-                .filter(s -> s.getStart().after(Date.from(startTime)) ||
-                        s.getStart().equals(Date.from(startTime)) ||
-                        s.getEnd().after(Date.from(startTime)))
-                .filter(s -> s.getStart().before(Date.from(endTime)) ||
-                        s.getEnd().equals(Date.from(endTime)) ||
-                        s.getEnd().before(Date.from(endTime)))
+        return fileData.getAppointmentByCalendarId(calendarId).getAppointmentList().stream()
+                .filter(s -> s.getCalendarId().equals(calendarId.toString()))
+                .filter(s -> s.getStartTime().after(Date.from(startTime)) ||
+                        s.getStartTime().equals(Date.from(startTime)) ||
+                        s.getEndTime().after(Date.from(startTime)))
+                .filter(s -> s.getStartTime().before(Date.from(endTime)) ||
+                        s.getEndTime().equals(Date.from(endTime)) ||
+                        s.getEndTime().before(Date.from(endTime)))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Initiate start slot with start Time.
-     * Initiate end slot with Start time plus duration of apointment.
-     *
+     * Initiate startTime slot with startTime Time.
+     * Initiate endTime slot with Start time plus duration of apointment.
+     * <p>
      * If endslot is within the time range Initiate Available time with UUID and slot time
      * after addition increment the times and continue till all slots of period are reached.
      *
@@ -167,20 +154,16 @@ public class AppointmentServiceImpl implements AppointmentService {
      * @param duration
      * @return List of available Time.
      */
-    private List<AvailableTime> getAllTimeSlotsBetweenTime(Instant startTime, Instant endTime, Integer duration) {
+    private List<AvailableSlot> getAllTimeSlotsBetweenTime(Instant startTime, Instant endTime, Integer duration) {
 
         Instant startSlot = startTime;
         Instant endSlot = startTime.plus(duration, ChronoUnit.MINUTES);
 
-        List<AvailableTime> availableSlots = new ArrayList<>();
+        List<AvailableSlot> availableSlots = new ArrayList<>();
 
-        while (endSlot.isBefore(endTime) || endSlot.equals(endTime)){
-            AvailableTime availableTime = new AvailableTime();
-            availableTime.setTimeSlot_id(UUID.randomUUID());
-            availableTime.setStartTime(Date.from(startSlot));
-            availableTime.setEndTime(Date.from(endSlot));
+        while (endSlot.isBefore(endTime) || endSlot.equals(endTime)) {
 
-            availableSlots.add(availableTime);
+            availableSlots.add(AvailableSlot.builder().startTime(Date.from(startSlot)).endTime(Date.from(endSlot)).build());
 
             startSlot = endSlot;
             endSlot = startSlot.plus(duration, ChronoUnit.MINUTES);

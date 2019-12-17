@@ -1,6 +1,7 @@
 package com.no.patient.sky.patientsky.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,9 +12,13 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Appointment {
 
-    private String id;
-    private String calendar_id;
-    private Date start;
-    private Date end;
+    @JsonProperty("calendar_id")
+    private String calendarId;
+
+    @JsonProperty("start")
+    private Date startTime;
+
+    @JsonProperty("end")
+    private Date endTime;
 
 }
