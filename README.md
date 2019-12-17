@@ -76,11 +76,8 @@ The Tests cases also check at response content and response status at Controller
 - Allow user to book appointment.
 
 ## Personal Details
-Name : Harsh Shah
-
-Mail : shah.harsh70@yahoo.in
-
-Phone : +47 93924184
-
-Github : https://github.com/harsh-shah-repo/patient-sky
+:boy: Harsh Shah
+:email: shah.harsh70@yahoo.in
+:iphone:  +47 93924184
+:memo:  https://github.com/harsh-shah-repo/patient-sky
 
