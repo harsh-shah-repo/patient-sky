@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
-    private JsonData fileData;
+    JsonData fileData;
 
     @Override
     public AppointmentResponse getAvailableTimes(AppointmentRequest request) {

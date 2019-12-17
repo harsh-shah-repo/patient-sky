@@ -2,6 +2,7 @@ package com.no.patient.sky.patientsky.initializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.no.patient.sky.patientsky.dto.Appointments;
+import com.no.patient.sky.patientsky.exception.AppointmentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -30,6 +31,7 @@ public class JsonData {
                 calendarAppointments.put(removeFileNameExtension(resource.getFilename()), appointments);
             } catch (IOException e) {
                 log.error("Error in Reading JSON file {}", resource.getFilename());
+                throw new AppointmentException("Error in loading json data from resources");
             }
         }
     }
