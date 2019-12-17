@@ -16,7 +16,7 @@ import java.util.UUID;
 public class AppointmentRequest {
 
     @NotEmpty(message = "List of Calendar Ids cannot be Empty")
-    private List<@NotNull(message="UUId is invalid") UUID> calendarIds;
+    private List<@NotNull(message = "UUId is invalid") UUID> calendarIds;
 
     @Min(value = 0L, message = "Duration must be greater than zero")
     private Integer duration;

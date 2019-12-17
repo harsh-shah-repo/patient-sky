@@ -88,7 +88,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     /**
-     *
      * This method validates Time period and sets StartTime and End time in object.
      * Period valid format = <Start date>/<End date>
      * example : 2019-04-23T10:00:00Z/2019-04-24T00:30:00Z

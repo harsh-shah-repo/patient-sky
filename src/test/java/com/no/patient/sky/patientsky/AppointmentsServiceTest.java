@@ -52,7 +52,6 @@ public class AppointmentsServiceTest {
      */
     @Test
     public void TestWithNoAppointmens_expectFourTimeSlots(){
-        //Period has same startTime time and endTime time
         String period = "2019-04-23T10:00:00Z/2019-04-23T11:00:00Z";
         AppointmentResponse response = service.getAvailableTimes(generateRequestByPeriod(period));
         assertResponse(response, 4);
@@ -68,7 +67,6 @@ public class AppointmentsServiceTest {
      */
     @Test
     public void TestWithFullAppointmens_expectNoSlotsAvailable(){
-        //Period has same startTime time and endTime time
         String period = "2019-04-23T12:15:00Z/2019-04-23T12:30:00Z";
         AppointmentResponse response = service.getAvailableTimes(generateRequestByPeriod(period));
         assertResponse(response, 0);
@@ -83,7 +81,6 @@ public class AppointmentsServiceTest {
      */
     @Test
     public void TestWithOneAppointmentInBetween_expectThreeTimeSlots(){
-        //Period has same startTime time and endTime time
         String period = "2019-04-23T12:00:00Z/2019-04-23T13:00:00Z";
         AppointmentResponse response = service.getAvailableTimes(generateRequestByPeriod(period));
         assertResponse(response, 3);
@@ -91,7 +88,7 @@ public class AppointmentsServiceTest {
 
     /**
      * Period = 1 hour
-     * No. of appointments = 1
+     * No. of appointments = 2 Partially
      * Duration = 15 mins
      *
      * Expected results 3 timeSlotList of 15 minutes each
@@ -145,5 +142,4 @@ public class AppointmentsServiceTest {
 
         return request;
     }
-
 }

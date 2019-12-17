@@ -1,6 +1,5 @@
 package com.no.patient.sky.patientsky;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.no.patient.sky.patientsky.controller.AppointmentController;
 import com.no.patient.sky.patientsky.dto.Appointment;
@@ -12,7 +11,6 @@ import com.no.patient.sky.patientsky.service.AppointmentServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -97,7 +95,6 @@ public class AppointmentControllerTest {
 
         Assert.assertNotNull(result.getResolvedException());
         Assert.assertTrue(result.getResolvedException().getMessage().contains("List of Calendar Ids cannot be Empty"));
-
     }
 
     @Test
@@ -112,7 +109,6 @@ public class AppointmentControllerTest {
 
         Assert.assertNotNull(result.getResolvedException());
         Assert.assertTrue(result.getResolvedException().getMessage().contains("Duration must be greater than zero"));
-
     }
 
     @Test
@@ -161,5 +157,4 @@ public class AppointmentControllerTest {
 
         return appointments;
     }
-
 }

@@ -1,5 +1,6 @@
 package com.no.patient.sky.patientsky.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,11 +11,19 @@ import java.util.Date;
 public class TimeSlot {
 
     private String id;
-    private String calendar_id;
-    private String type_id;
     private Date start;
     private Date end;
-    private boolean public_bookable;
-    private boolean out_of_office;
+
+    @JsonProperty("calendar_id")
+    private String calendarId;
+
+    @JsonProperty("type_id")
+    private String typeId;
+
+    @JsonProperty("type_id")
+    private boolean publicBookable;
+
+    @JsonProperty("out_of_office")
+    private boolean outOfOffice;
 
 }

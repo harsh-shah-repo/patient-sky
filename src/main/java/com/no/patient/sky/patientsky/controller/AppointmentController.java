@@ -16,13 +16,12 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
 
-
     @RequestMapping(
             value = "/getAvailableSlot",
             method = RequestMethod.GET,
             consumes = "application/json",
             produces = "application/json")
-    public AppointmentResponse findAvailableSlot(@RequestBody @Validated AppointmentRequest request){
+    public AppointmentResponse findAvailableSlot(@RequestBody @Validated AppointmentRequest request) {
         return appointmentService.getAvailableTimes(request);
     }
 
