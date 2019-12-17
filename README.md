@@ -77,7 +77,10 @@ The Tests cases also check at response content and response status at Controller
 
 ## Personal Details
 :boy: Harsh Shah
+
 :email: shah.harsh70@yahoo.in
+
 :iphone:  +47 93924184
+
 :memo:  https://github.com/harsh-shah-repo/patient-sky
 
