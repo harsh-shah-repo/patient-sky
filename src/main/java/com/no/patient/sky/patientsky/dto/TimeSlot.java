@@ -20,7 +20,7 @@ public class TimeSlot {
     @JsonProperty("type_id")
     private String typeId;
 
-    @JsonProperty("type_id")
+    @JsonProperty("public_bookable")
     private Boolean publicBookable;
 
     @JsonProperty("out_of_office")
